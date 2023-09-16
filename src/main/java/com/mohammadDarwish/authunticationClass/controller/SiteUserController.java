@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class SiteUserController {
 
@@ -18,7 +21,7 @@ public class SiteUserController {
 
     @GetMapping("/login")
     public String getLoginPage(){
-        return "/login.html";
+        return "/";
     }
 
     @GetMapping("/signup")
@@ -29,19 +32,36 @@ public class SiteUserController {
     @PostMapping("/signup")
     public RedirectView signUpUser(String username,String password){
         String hashedPassword= BCrypt.hashpw(password,BCrypt.gensalt(12));
-        SiteUser siteUser=new SiteUser(username,hashedPassword);
-        siteUserRepository.save(siteUser);
-        return new RedirectView("/login");
+        if(siteUserRepository.findByUsername(username)==null){
+            SiteUser siteUser=new SiteUser(username,hashedPassword);
+            siteUserRepository.save(siteUser);
+        }else {
+            return new RedirectView("/signup");
+
+        }
+
+        return new RedirectView("/");
     }
 
     @PostMapping("/login")
-    public RedirectView signInUser(String username,String password){
+    public RedirectView signInUser(HttpServletRequest request, String username, String password){
         SiteUser userFromDb=siteUserRepository.findByUsername(username);
 
         if ((userFromDb ==null)||
                 (!BCrypt.checkpw(password,userFromDb.getPassword()))){
-            return new RedirectView("/login");
+            return new RedirectView("/");
         }
+        HttpSession session=request.getSession();
+        session.setAttribute("username", username);
+        return new RedirectView("/postList");
+    }
+
+    @PostMapping("/logout")
+    public RedirectView logOutUserWithSecret(HttpServletRequest request){
+
+        HttpSession session= request.getSession();
+        session.invalidate();
+
         return new RedirectView("/");
     }
 

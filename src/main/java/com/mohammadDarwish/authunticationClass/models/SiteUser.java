@@ -15,6 +15,15 @@ public class SiteUser {
 
     @OneToMany(mappedBy = "siteUser",cascade = CascadeType.ALL)
     private List<Post> postList;
+
+    public List<Post> getPostList() {
+        return postList;
+    }
+
+    public void setPostList(List<Post> postList) {
+        this.postList = postList;
+    }
+
     public SiteUser(String username, String password) {
         this.username = username;
         this.password = password;
