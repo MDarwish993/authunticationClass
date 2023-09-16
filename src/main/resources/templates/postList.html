@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+<h1 th:text="'welcome: '+${username}"></h1>
+
+<form action="/logout" method="POST">
+    <input type="submit" value="Log Out">
+</form>
+
+<form action="/add-post" method="post" >
+
+    <label for="textContent">Username</label>
+    <textarea name="textContent" id="textContent"></textarea>
+    <input type="submit" value="ADD POST">
+</form>
+
+<h2>Post List :</h2>
+<ul>
+    <th:block th:each="post : ${listOfPost}">
+        <li th:text="${post.textContent}"></li>
+    </th:block>
+</ul>
+
+</body>
+</html>
